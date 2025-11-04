@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Reinforcement Learning Interactively</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 20px 0 10px 0;
+        }
+
+        .concept-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .grid-world {
+            display: inline-block;
+            margin: 20px 0;
+            border: 3px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .grid-row {
+            display: flex;
+        }
+
+        .grid-cell {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+        }
+
+        .grid-cell:hover {
+            background: #f0f0f0;
+        }
+
+        .grid-cell.agent {
+            background: #667eea;
+            color: white;
+        }
+
+        .grid-cell.goal {
+            background: #48bb78;
+            color: white;
+        }
+
+        .grid-cell.obstacle {
+            background: #333;
+            color: white;
+        }
+
+        .grid-cell.visited {
+            background: #e6f2ff;
+        }
+
+        .q-value {
+            font-size: 10px;
+            position: absolute;
+            color: #666;
+        }
+
+        .q-value.up { top: 2px; left: 50%; transform: translateX(-50%); }
+        .q-value.down { bottom: 2px; left: 50%; transform: translateX(-50%); }
+        .q-value.left { left: 2px; top: 50%; transform: translateY(-50%); }
+        .q-value.right { right: 2px; top: 50%; transform: translateY(-50%); }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #e6f2ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .warning-box {
+            background: #fff4e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #333;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+
+        .equation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Georgia', serif;
+            font-size: 1.2em;
+            margin: 15px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Learn Reinforcement Learning</h1>
+            <p>Interactive Guide to Understanding RL Concepts</p>
+        </header>
+
+        <div class="content">
+            <!-- Introduction Section -->
+            <div class="section">
+                <h2>What is Reinforcement Learning?</h2>
+                <div class="concept-box">
+                    <p><strong>Reinforcement Learning (RL)</strong> is a type of machine learning where an agent learns to make decisions by interacting with an environment. The agent receives rewards or penalties based on its actions and learns to maximize cumulative rewards over time.</p>
+                </div>
+
+                <h3>Key Concepts:</h3>
+                <div class="concept-box">
+                    <p><strong>🎯 Agent:</strong> The learner or decision-maker</p>
+                    <p><strong>🌍 Environment:</strong> The world the agent interacts with</p>
+                    <p><strong>🎬 Action:</strong> What the agent can do</p>
+                    <p><strong>📍 State:</strong> The current situation of the agent</p>
+                    <p><strong>🎁 Reward:</strong> Feedback from the environment</p>
+                    <p><strong>📋 Policy:</strong> The agent's strategy for choosing actions</p>
+                </div>
+            </div>
+
+            <!-- Interactive Grid World -->
+            <div class="section">
+                <h2>🎮 Interactive Grid World</h2>
+                <div class="info-box">
+                    <p><strong>Try it yourself!</strong> This is a simple grid world where the agent (blue square) needs to reach the goal (green square) while avoiding obstacles (black squares). Click the buttons below to control the agent manually or watch it learn!</p>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #667eea;"></div>
+                        <span>Agent</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #48bb78;"></div>
+                        <span>Goal (+100)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #333;"></div>
+                        <span>Obstacle (-100)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: white; border-color: #ddd;"></div>
+                        <span>Empty (-1)</span>
+                    </div>
+                </div>
+
+                <div id="gridWorld"></div>
+
+                <div class="controls">
+                    <button onclick="moveAgent('up')">⬆️ Up</button>
+                    <button onclick="moveAgent('down')">⬇️ Down</button>
+                    <button onclick="moveAgent('left')">⬅️ Left</button>
+                    <button onclick="moveAgent('right')">➡️ Right</button>
+                    <button onclick="resetGrid()">🔄 Reset</button>
+                    <button onclick="toggleTraining()" id="trainBtn">🎓 Start Training</button>
+                    <button onclick="showOptimalPolicy()">🎯 Show Best Path</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="episodeCount">0</div>
+                        <div class="stat-label">Episodes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalReward">0</div>
+                        <div class="stat-label">Total Reward</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stepCount">0</div>
+                        <div class="stat-label">Steps</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="successRate">0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q-Learning Section -->
+            <div class="section">
+                <h2>📚 Q-Learning Algorithm</h2>
+                <div class="concept-box">
+                    <p><strong>Q-Learning</strong> is a popular RL algorithm that learns the value of taking each action in each state. The "Q" stands for "quality" - how good is an action in a particular state?</p>
+                </div>
+
+                <h3>The Q-Learning Update Rule:</h3>
+                <div class="equation">
+                    Q(s,a) ← Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
+                </div>
+
+                <div class="concept-box">
+                    <p><strong>Q(s,a):</strong> Q-value for state s and action a</p>
+                    <p><strong>α (alpha):</strong> Learning rate (how much to update)</p>
+                    <p><strong>r:</strong> Reward received</p>
+                    <p><strong>γ (gamma):</strong> Discount factor (how much to value future rewards)</p>
+                    <p><strong>s':</strong> Next state</p>
+                </div>
+
+                <h3>⚙️ Training Parameters:</h3>
+
+                <div class="slider-container">
+                    <label>Learning Rate (α): <span class="slider-value" id="alphaValue">0.1</span></label>
+                    <input type="range" id="alphaSlider" min="0" max="1" step="0.01" value="0.1" oninput="updateParameter('alpha', this.value)">
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Higher values make the agent learn faster but may be unstable</p>
+                </div>
+
+                <div class="slider-container">
+                    <label>Discount Factor (γ): <span class="slider-value" id="gammaValue">0.9</span></label>
+                    <input type="range" id="gammaSlider" min="0" max="1" step="0.01" value="0.9" oninput="updateParameter('gamma', this.value)">
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">How much the agent values future rewards</p>
+                </div>
+
+                <div class="slider-container">
+                    <label>Exploration Rate (ε): <span class="slider-value" id="epsilonValue">0.3</span></label>
+                    <input type="range" id="epsilonSlider" min="0" max="1" step="0.01" value="0.3" oninput="updateParameter('epsilon', this.value)">
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Probability of exploring random actions vs exploiting known good actions</p>
+                </div>
+
+                <div class="slider-container">
+                    <label>Training Speed: <span class="slider-value" id="speedValue">50ms</span></label>
+                    <input type="range" id="speedSlider" min="10" max="500" step="10" value="50" oninput="updateParameter('speed', this.value)">
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Time between training steps (lower = faster)</p>
+                </div>
+            </div>
+
+            <!-- Exploration vs Exploitation -->
+            <div class="section">
+                <h2>🔍 Exploration vs Exploitation</h2>
+                <div class="concept-box">
+                    <p><strong>Exploration:</strong> Trying new actions to discover potentially better strategies</p>
+                    <p><strong>Exploitation:</strong> Using known information to maximize reward</p>
+                </div>
+
+                <div class="warning-box">
+                    <p><strong>The Dilemma:</strong> Should the agent stick with what it knows works (exploit) or try something new that might be better (explore)? This is one of the fundamental challenges in reinforcement learning!</p>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>ε-Greedy Strategy:</strong> With probability ε, choose a random action (explore). Otherwise, choose the best known action (exploit). Watch how the exploration rate affects learning in the grid world above!</p>
+                </div>
+            </div>
+
+            <!-- Key Takeaways -->
+            <div class="section">
+                <h2>🎓 Key Takeaways</h2>
+                <div class="concept-box">
+                    <p>✅ RL agents learn through trial and error</p>
+                    <p>✅ Actions have consequences (rewards/penalties)</p>
+                    <p>✅ The goal is to maximize cumulative reward over time</p>
+                    <p>✅ Q-Learning learns the value of state-action pairs</p>
+                    <p>✅ Balancing exploration and exploitation is crucial</p>
+                    <p>✅ Learning rate and discount factor affect how the agent learns</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 Keep experimenting with different parameters to see how they affect learning!</p>
+            <p>Built with HTML, CSS, and JavaScript | Interactive RL Learning Platform</p>
+        </div>
+    </div>
+
+    <script>
+        // Grid World Configuration
+        const GRID_SIZE = 5;
+        const ACTIONS = ['up', 'down', 'left', 'right'];
+
+        // Game State
+        let agentPos = { x: 0, y: 0 };
+        let goalPos = { x: 4, y: 4 };
+        let obstacles = [{ x: 2, y: 2 }, { x: 1, y: 3 }, { x: 3, y: 1 }];
+        let visited = new Set();
+
+        // Q-Learning Parameters
+        let qTable = {};
+        let alpha = 0.1;  // Learning rate
+        let gamma = 0.9;  // Discount factor
+        let epsilon = 0.3; // Exploration rate
+        let trainingSpeed = 50;
+
+        // Statistics
+        let episodes = 0;
+        let totalReward = 0;
+        let steps = 0;
+        let successCount = 0;
+        let isTraining = false;
+        let trainingInterval = null;
+
+        // Initialize Q-Table
+        function initQTable() {
+            qTable = {};
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const state = `${x},${y}`;
+                    qTable[state] = { up: 0, down: 0, left: 0, right: 0 };
+                }
+            }
+        }
+
+        // Create Grid World
+        function createGrid() {
+            const gridDiv = document.getElementById('gridWorld');
+            gridDiv.innerHTML = '';
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-world';
+
+            for (let y = 0; y < GRID_SIZE; y++) {
+                const row = document.createElement('div');
+                row.className = 'grid-row';
+
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.id = `cell-${x}-${y}`;
+
+                    if (x === agentPos.x && y === agentPos.y) {
+                        cell.classList.add('agent');
+                        cell.textContent = '🤖';
+                    } else if (x === goalPos.x && y === goalPos.y) {
+                        cell.classList.add('goal');
+                        cell.textContent = '🎯';
+                    } else if (obstacles.some(obs => obs.x === x && obs.y === y)) {
+                        cell.classList.add('obstacle');
+                        cell.textContent = '🚫';
+                    } else if (visited.has(`${x},${y}`)) {
+                        cell.classList.add('visited');
+                    }
+
+                    row.appendChild(cell);
+                }
+
+                gridContainer.appendChild(row);
+            }
+
+            gridDiv.appendChild(gridContainer);
+        }
+
+        // Update Grid Cell
+        function updateCell(x, y) {
+            const cell = document.getElementById(`cell-${x}-${y}`);
+            if (!cell) return;
+
+            cell.className = 'grid-cell';
+            cell.textContent = '';
+
+            if (x === agentPos.x && y === agentPos.y) {
+                cell.classList.add('agent');
+                cell.textContent = '🤖';
+                cell.classList.add('pulse');
+                setTimeout(() => cell.classList.remove('pulse'), 500);
+            } else if (x === goalPos.x && y === goalPos.y) {
+                cell.classList.add('goal');
+                cell.textContent = '🎯';
+            } else if (obstacles.some(obs => obs.x === x && obs.y === y)) {
+                cell.classList.add('obstacle');
+                cell.textContent = '🚫';
+            } else if (visited.has(`${x},${y}`)) {
+                cell.classList.add('visited');
+            }
+        }
+
+        // Get next position based on action
+        function getNextPos(pos, action) {
+            const newPos = { ...pos };
+            switch (action) {
+                case 'up': newPos.y = Math.max(0, pos.y - 1); break;
+                case 'down': newPos.y = Math.min(GRID_SIZE - 1, pos.y + 1); break;
+                case 'left': newPos.x = Math.max(0, pos.x - 1); break;
+                case 'right': newPos.x = Math.min(GRID_SIZE - 1, pos.x + 1); break;
+            }
+            return newPos;
+        }
+
+        // Get reward for a position
+        function getReward(pos) {
+            if (pos.x === goalPos.x && pos.y === goalPos.y) return 100;
+            if (obstacles.some(obs => obs.x === pos.x && obs.y === pos.y)) return -100;
+            return -1;
+        }
+
+        // Move agent
+        function moveAgent(action) {
+            if (isTraining) return;
+
+            const oldPos = { ...agentPos };
+            const newPos = getNextPos(agentPos, action);
+
+            visited.add(`${oldPos.x},${oldPos.y}`);
+            agentPos = newPos;
+
+            updateCell(oldPos.x, oldPos.y);
+            updateCell(newPos.x, newPos.y);
+
+            const reward = getReward(newPos);
+            totalReward += reward;
+            steps++;
+
+            updateStats();
+
+            if (reward === 100) {
+                setTimeout(() => {
+                    alert('🎉 Goal reached! Total reward: ' + totalReward);
+                    resetGrid();
+                }, 100);
+            } else if (reward === -100) {
+                setTimeout(() => {
+                    alert('💥 Hit obstacle! Total reward: ' + totalReward);
+                    resetGrid();
+                }, 100);
+            }
+        }
+
+        // Choose action using ε-greedy strategy
+        function chooseAction(state) {
+            if (Math.random() < epsilon) {
+                // Explore: random action
+                return ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
+            } else {
+                // Exploit: best action
+                const qValues = qTable[state];
+                let bestAction = ACTIONS[0];
+                let bestValue = qValues[bestAction];
+
+                for (const action of ACTIONS) {
+                    if (qValues[action] > bestValue) {
+                        bestValue = qValues[action];
+                        bestAction = action;
+                    }
+                }
+
+                return bestAction;
+            }
+        }
+
+        // Q-Learning update
+        function qLearningUpdate(state, action, reward, nextState) {
+            const currentQ = qTable[state][action];
+            const maxNextQ = Math.max(...Object.values(qTable[nextState]));
+            const newQ = currentQ + alpha * (reward + gamma * maxNextQ - currentQ);
+            qTable[state][action] = newQ;
+        }
+
+        // Training step
+        function trainingStep() {
+            const oldPos = { ...agentPos };
+            const state = `${oldPos.x},${oldPos.y}`;
+
+            const action = chooseAction(state);
+            const newPos = getNextPos(agentPos, action);
+
+            visited.add(`${oldPos.x},${oldPos.y}`);
+            agentPos = newPos;
+
+            const reward = getReward(newPos);
+            const nextState = `${newPos.x},${newPos.y}`;
+
+            qLearningUpdate(state, action, reward, nextState);
+
+            updateCell(oldPos.x, oldPos.y);
+            updateCell(newPos.x, newPos.y);
+
+            totalReward += reward;
+            steps++;
+
+            // Check if episode ended
+            if (reward === 100 || reward === -100) {
+                episodes++;
+                if (reward === 100) successCount++;
+
+                // Reset for next episode
+                visited.clear();
+                const oldAgentPos = { ...agentPos };
+                agentPos = { x: 0, y: 0 };
+                updateCell(oldAgentPos.x, oldAgentPos.y);
+                updateCell(agentPos.x, agentPos.y);
+            }
+
+            updateStats();
+        }
+
+        // Toggle training
+        function toggleTraining() {
+            isTraining = !isTraining;
+            const btn = document.getElementById('trainBtn');
+
+            if (isTraining) {
+                btn.textContent = '⏸️ Stop Training';
+                btn.style.background = '#e74c3c';
+                trainingInterval = setInterval(trainingStep, trainingSpeed);
+            } else {
+                btn.textContent = '🎓 Start Training';
+                btn.style.background = '#667eea';
+                clearInterval(trainingInterval);
+            }
+        }
+
+        // Show optimal policy
+        function showOptimalPolicy() {
+            if (isTraining) {
+                alert('Stop training first!');
+                return;
+            }
+
+            // Reset and follow best policy
+            resetGrid();
+
+            const moveSequence = [];
+            let currentPos = { ...agentPos };
+            let maxSteps = 20;
+
+            while (maxSteps-- > 0) {
+                const state = `${currentPos.x},${currentPos.y}`;
+                const qValues = qTable[state];
+
+                let bestAction = ACTIONS[0];
+                let bestValue = qValues[bestAction];
+
+                for (const action of ACTIONS) {
+                    if (qValues[action] > bestValue) {
+                        bestValue = qValues[action];
+                        bestAction = action;
+                    }
+                }
+
+                moveSequence.push(bestAction);
+                currentPos = getNextPos(currentPos, bestAction);
+
+                if (currentPos.x === goalPos.x && currentPos.y === goalPos.y) {
+                    break;
+                }
+            }
+
+            // Execute moves
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i >= moveSequence.length) {
+                    clearInterval(interval);
+                    return;
+                }
+                moveAgent(moveSequence[i++]);
+            }, 300);
+        }
+
+        // Reset grid
+        function resetGrid() {
+            if (trainingInterval) {
+                clearInterval(trainingInterval);
+                isTraining = false;
+                document.getElementById('trainBtn').textContent = '🎓 Start Training';
+                document.getElementById('trainBtn').style.background = '#667eea';
+            }
+
+            agentPos = { x: 0, y: 0 };
+            visited.clear();
+            steps = 0;
+            totalReward = 0;
+
+            createGrid();
+            updateStats();
+        }
+
+        // Update parameter
+        function updateParameter(param, value) {
+            value = parseFloat(value);
+
+            switch (param) {
+                case 'alpha':
+                    alpha = value;
+                    document.getElementById('alphaValue').textContent = value.toFixed(2);
+                    break;
+                case 'gamma':
+                    gamma = value;
+                    document.getElementById('gammaValue').textContent = value.toFixed(2);
+                    break;
+                case 'epsilon':
+                    epsilon = value;
+                    document.getElementById('epsilonValue').textContent = value.toFixed(2);
+                    break;
+                case 'speed':
+                    trainingSpeed = value;
+                    document.getElementById('speedValue').textContent = value + 'ms';
+                    if (isTraining) {
+                        clearInterval(trainingInterval);
+                        trainingInterval = setInterval(trainingStep, trainingSpeed);
+                    }
+                    break;
+            }
+        }
+
+        // Update statistics display
+        function updateStats() {
+            document.getElementById('episodeCount').textContent = episodes;
+            document.getElementById('totalReward').textContent = totalReward;
+            document.getElementById('stepCount').textContent = steps;
+            const successRate = episodes > 0 ? ((successCount / episodes) * 100).toFixed(1) : 0;
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        // Initialize
+        initQTable();
+        createGrid();
+        updateStats();
+    </script>
+</body>
+</html>
