@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Reinforcement Learning Interactively</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <title>Q-Learning Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,116 +13,80 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-attachment: fixed;
-            color: #1a202c;
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.3;
-        }
-
-        header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            font-weight: 800;
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        header p {
-            font-size: 1.3em;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            font-weight: 300;
-        }
-
-        .content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
             padding: 40px;
+            background: #1e293b;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .section {
-            margin-bottom: 50px;
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
-        .section h2 {
-            color: #667eea;
-            font-size: 2.2em;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 4px solid #667eea;
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        h1 {
+            font-size: 2.5em;
             font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #0f172a;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .section h3 {
-            color: #764ba2;
-            font-size: 1.6em;
-            margin: 30px 0 15px 0;
-            font-weight: 600;
-        }
-
-        .concept-box {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border-left: 5px solid #667eea;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .concept-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
-        }
-
-        .concept-box p {
-            margin: 10px 0;
-            line-height: 1.8;
+            gap: 8px;
         }
 
         .grid-world {
             display: inline-block;
-            margin: 30px 0;
-            border: 4px solid #2d3748;
-            border-radius: 16px;
+            border: 3px solid #475569;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-            background: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin: 0 auto;
         }
 
         .grid-row {
@@ -130,610 +94,424 @@
         }
 
         .grid-cell {
-            width: 70px;
-            height: 70px;
-            border: 2px solid #e2e8f0;
+            width: 80px;
+            height: 80px;
+            border: 1px solid #334155;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 32px;
+            background: #1e293b;
+            transition: all 0.2s ease;
             position: relative;
-            background: white;
-        }
-
-        .grid-cell:hover {
-            background: #f7fafc;
-            transform: scale(1.05);
         }
 
         .grid-cell.agent {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: inset 0 2px 15px rgba(0,0,0,0.3);
         }
 
         .grid-cell.goal {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: inset 0 2px 15px rgba(0,0,0,0.3);
         }
 
         .grid-cell.obstacle {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            color: white;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            background: #475569;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
         }
 
         .grid-cell.visited {
-            background: #ebf4ff;
+            background: #1e3a5f;
         }
-
-        .q-value {
-            font-size: 10px;
-            position: absolute;
-            color: #666;
-        }
-
-        .q-value.up { top: 2px; left: 50%; transform: translateX(-50%); }
-        .q-value.down { bottom: 2px; left: 50%; transform: translateX(-50%); }
-        .q-value.left { left: 2px; top: 50%; transform: translateY(-50%); }
-        .q-value.right { right: 2px; top: 50%; transform: translateY(-50%); }
 
         .controls {
-            margin: 20px 0;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.2s ease;
             font-family: 'Inter', sans-serif;
         }
 
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
         button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
-        button:disabled {
-            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        button.secondary {
+            background: #334155;
+        }
+
+        button.secondary:hover {
+            background: #475569;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
 
         .stats {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            padding: 30px;
-            border-radius: 16px;
-            margin: 30px 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            background: white;
+        .stat {
+            background: #334155;
+            padding: 20px;
             border-radius: 12px;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-5px);
+            text-align: center;
         }
 
         .stat-value {
             font-size: 2.5em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .stat-label {
-            color: #718096;
-            font-size: 0.95em;
-            font-weight: 500;
+            color: #94a3b8;
+            font-size: 0.9em;
             margin-top: 5px;
         }
 
-        .slider-container {
-            margin: 15px 0;
+        .formula-display {
+            background: #0a0f1a;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            border: 2px solid #334155;
         }
 
-        .slider-container label {
-            display: block;
-            margin-bottom: 10px;
+        .formula-main {
+            font-size: 1.2em;
+            text-align: center;
+            line-height: 2.2;
+            margin-bottom: 20px;
+        }
+
+        .formula-result {
+            font-size: 1.4em;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .var { color: #10b981; font-weight: 700; }
+        .val { color: #f59e0b; font-weight: 700; }
+        .op { color: #ef4444; font-weight: 700; }
+
+        .params {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .param {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        .param-name {
+            color: #10b981;
+            font-size: 0.85em;
             font-weight: 600;
-            color: #2d3748;
-            font-size: 1.05em;
+            margin-bottom: 8px;
+        }
+
+        .param-value {
+            color: #f59e0b;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .slider-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-label {
+            font-size: 0.9em;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-value {
+            color: #667eea;
+            font-weight: 700;
         }
 
         input[type="range"] {
             width: 100%;
-            max-width: 500px;
-            height: 8px;
-            border-radius: 5px;
-            background: linear-gradient(to right, #667eea, #764ba2);
+            height: 6px;
+            border-radius: 3px;
+            background: #334155;
             outline: none;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        input[type="range"]:hover {
-            opacity: 1;
+            -webkit-appearance: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: #667eea;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: #667eea;
             cursor: pointer;
             border: none;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
-        }
-
-        .slider-value {
-            display: inline-block;
-            margin-left: 10px;
-            color: #667eea;
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #e6f2ff 0%, #f0f7ff 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 5px solid #667eea;
-            box-shadow: 0 3px 15px rgba(102, 126, 234, 0.1);
-        }
-
-        .info-box p {
-            line-height: 1.7;
-        }
-
-        .warning-box {
-            background: linear-gradient(135deg, #fff4e6 0%, #fffaf0 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 5px solid #f59e0b;
-            box-shadow: 0 3px 15px rgba(245, 158, 11, 0.1);
-        }
-
-        .warning-box p {
-            line-height: 1.7;
         }
 
         .legend {
             display: flex;
             gap: 20px;
+            justify-content: center;
             flex-wrap: wrap;
-            margin: 20px 0;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .legend-color {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            border: 2px solid #333;
-        }
-
-        code {
-            background: #2d3748;
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            color: #68d391;
             font-size: 0.9em;
+            color: #94a3b8;
         }
 
-        .equation {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            padding: 30px;
-            border-radius: 16px;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5em;
-            margin: 25px 0;
-            border: 3px solid #667eea;
-            color: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .formula-live {
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-            padding: 40px;
-            border-radius: 20px;
-            margin: 30px 0;
-            border: 4px solid #667eea;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-        }
-
-        .formula-live h3 {
-            color: #68d391 !important;
-            text-align: center;
-            font-size: 1.8em;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .formula-display {
-            background: #1a202c;
-            padding: 30px;
-            border-radius: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.3em;
-            color: #e2e8f0;
-            text-align: center;
-            margin: 20px 0;
-            border: 2px solid #4a5568;
-            line-height: 2;
-        }
-
-        .formula-var {
-            color: #68d391;
-            font-weight: 700;
-            padding: 2px 6px;
-            background: rgba(104, 211, 145, 0.1);
-            border-radius: 4px;
-        }
-
-        .formula-value {
-            color: #f6ad55;
-            font-weight: 700;
-            padding: 2px 6px;
-            background: rgba(246, 173, 85, 0.1);
-            border-radius: 4px;
-        }
-
-        .formula-operator {
-            color: #fc8181;
-            font-weight: 700;
-        }
-
-        .formula-explanation {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .formula-param {
-            background: #2d3748;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .formula-param-name {
-            color: #68d391;
-            font-weight: 700;
-            font-size: 1.1em;
-            margin-bottom: 5px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .formula-param-value {
-            color: #f6ad55;
-            font-size: 1.5em;
-            font-weight: 800;
-            margin: 8px 0;
-        }
-
-        .formula-param-desc {
-            color: #a0aec0;
-            font-size: 0.85em;
-            line-height: 1.5;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            color: #666;
+        .legend-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid #475569;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.02); }
         }
 
         .pulse {
-            animation: pulse 0.5s ease;
+            animation: pulse 0.3s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🤖 Learn Reinforcement Learning</h1>
-            <p>Interactive Guide to Understanding RL Concepts</p>
-        </header>
+        <div class="left-panel">
+            <div>
+                <h1>Q-Learning Playground</h1>
+                <p class="subtitle">Watch an AI agent learn to navigate in real-time</p>
+            </div>
 
-        <div class="content">
-            <!-- Introduction Section -->
-            <div class="section">
-                <h2>What is Reinforcement Learning?</h2>
-                <div class="concept-box">
-                    <p><strong>Reinforcement Learning (RL)</strong> is a type of machine learning where an agent learns to make decisions by interacting with an environment. The agent receives rewards or penalties based on its actions and learns to maximize cumulative rewards over time.</p>
-                </div>
-
-                <h3>Key Concepts:</h3>
-                <div class="concept-box">
-                    <p><strong>🎯 Agent:</strong> The learner or decision-maker</p>
-                    <p><strong>🌍 Environment:</strong> The world the agent interacts with</p>
-                    <p><strong>🎬 Action:</strong> What the agent can do</p>
-                    <p><strong>📍 State:</strong> The current situation of the agent</p>
-                    <p><strong>🎁 Reward:</strong> Feedback from the environment</p>
-                    <p><strong>📋 Policy:</strong> The agent's strategy for choosing actions</p>
+            <div class="card">
+                <div class="card-title">🎮 Grid World</div>
+                <div style="text-align: center;">
+                    <div id="gridWorld"></div>
+                    <div class="legend" style="margin-top: 20px;">
+                        <div class="legend-item">
+                            <div class="legend-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            <span>Agent</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+                            <span>Goal (+100)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-box" style="background: #475569;"></div>
+                            <span>Wall (-100)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Interactive Grid World -->
-            <div class="section">
-                <h2>🎮 Interactive Grid World</h2>
-                <div class="info-box">
-                    <p><strong>Try it yourself!</strong> This is a simple grid world where the agent (blue square) needs to reach the goal (green square) while avoiding obstacles (black squares). Click the buttons below to control the agent manually or watch it learn!</p>
-                </div>
-
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #667eea;"></div>
-                        <span>Agent</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #48bb78;"></div>
-                        <span>Goal (+100)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #333;"></div>
-                        <span>Obstacle (-100)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: white; border-color: #ddd;"></div>
-                        <span>Empty (-1)</span>
-                    </div>
-                </div>
-
-                <div id="gridWorld"></div>
-
+            <div class="card">
+                <div class="card-title">🎛️ Controls</div>
                 <div class="controls">
-                    <button onclick="moveAgent('up')">⬆️ Up</button>
-                    <button onclick="moveAgent('down')">⬇️ Down</button>
-                    <button onclick="moveAgent('left')">⬅️ Left</button>
-                    <button onclick="moveAgent('right')">➡️ Right</button>
-                    <button onclick="resetGrid()">🔄 Reset</button>
-                    <button onclick="toggleTraining()" id="trainBtn">🎓 Start Training</button>
-                    <button onclick="showOptimalPolicy()">🎯 Show Best Path</button>
+                    <button onclick="moveAgent('up')">⬆️</button>
+                    <button onclick="moveAgent('down')">⬇️</button>
+                    <button onclick="moveAgent('left')">⬅️</button>
+                    <button onclick="moveAgent('right')">➡️</button>
                 </div>
+                <div class="controls" style="margin-top: 15px;">
+                    <button onclick="toggleTraining()" id="trainBtn">▶️ Train</button>
+                    <button onclick="showOptimalPolicy()" class="secondary">🎯 Show Best</button>
+                    <button onclick="resetGrid()" class="secondary">🔄 Reset</button>
+                </div>
+            </div>
 
+            <div class="card">
+                <div class="card-title">📊 Statistics</div>
                 <div class="stats">
-                    <div class="stat-item">
+                    <div class="stat">
                         <div class="stat-value" id="episodeCount">0</div>
                         <div class="stat-label">Episodes</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat">
                         <div class="stat-value" id="totalReward">0</div>
                         <div class="stat-label">Total Reward</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat">
                         <div class="stat-value" id="stepCount">0</div>
                         <div class="stat-label">Steps</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat">
                         <div class="stat-value" id="successRate">0%</div>
                         <div class="stat-label">Success Rate</div>
                     </div>
                 </div>
             </div>
-
-            <!-- Q-Learning Section -->
-            <div class="section">
-                <h2>📚 Q-Learning Algorithm</h2>
-                <div class="concept-box">
-                    <p><strong>Q-Learning</strong> is a popular RL algorithm that learns the value of taking each action in each state. The "Q" stands for "quality" - how good is an action in a particular state?</p>
-                </div>
-
-                <h3>The Q-Learning Update Rule:</h3>
-                <div class="equation">
-                    Q(s,a) ← Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
-                </div>
-
-                <div class="concept-box">
-                    <p><strong>Q(s,a):</strong> Q-value for state s and action a</p>
-                    <p><strong>α (alpha):</strong> Learning rate (how much to update)</p>
-                    <p><strong>r:</strong> Reward received</p>
-                    <p><strong>γ (gamma):</strong> Discount factor (how much to value future rewards)</p>
-                    <p><strong>s':</strong> Next state</p>
-                </div>
-
-                <h3>⚙️ Training Parameters:</h3>
-
-                <div class="slider-container">
-                    <label>Learning Rate (α): <span class="slider-value" id="alphaValue">0.1</span></label>
-                    <input type="range" id="alphaSlider" min="0" max="1" step="0.01" value="0.1" oninput="updateParameter('alpha', this.value)">
-                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Higher values make the agent learn faster but may be unstable</p>
-                </div>
-
-                <div class="slider-container">
-                    <label>Discount Factor (γ): <span class="slider-value" id="gammaValue">0.9</span></label>
-                    <input type="range" id="gammaSlider" min="0" max="1" step="0.01" value="0.9" oninput="updateParameter('gamma', this.value)">
-                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">How much the agent values future rewards</p>
-                </div>
-
-                <div class="slider-container">
-                    <label>Exploration Rate (ε): <span class="slider-value" id="epsilonValue">0.3</span></label>
-                    <input type="range" id="epsilonSlider" min="0" max="1" step="0.01" value="0.3" oninput="updateParameter('epsilon', this.value)">
-                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Probability of exploring random actions vs exploiting known good actions</p>
-                </div>
-
-                <div class="slider-container">
-                    <label>Training Speed: <span class="slider-value" id="speedValue">50ms</span></label>
-                    <input type="range" id="speedSlider" min="10" max="500" step="10" value="50" oninput="updateParameter('speed', this.value)">
-                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Time between training steps (lower = faster)</p>
-                </div>
-
-                <!-- Real-time Formula Display -->
-                <div class="formula-live">
-                    <h3>⚡ Live Q-Learning Update</h3>
-                    <div class="formula-display" id="liveFormula">
-                        <div>
-                            <span class="formula-var">Q_new</span>
-                            <span class="formula-operator">=</span>
-                            <span class="formula-value" id="qOld">0.00</span>
-                            <span class="formula-operator">+</span>
-                            <span class="formula-value" id="alphaDisplay">0.10</span>
-                            <span class="formula-operator">×</span>
-                            [<span class="formula-value" id="rewardDisplay">0</span>
-                            <span class="formula-operator">+</span>
-                            <span class="formula-value" id="gammaDisplay">0.90</span>
-                            <span class="formula-operator">×</span>
-                            <span class="formula-value" id="maxQDisplay">0.00</span>
-                            <span class="formula-operator">-</span>
-                            <span class="formula-value" id="qOldDisplay">0.00</span>]
-                        </div>
-                        <div style="margin-top: 20px; font-size: 1.4em;">
-                            <span class="formula-operator">=</span>
-                            <span class="formula-var">Q_new</span>
-                            <span class="formula-operator">=</span>
-                            <span class="formula-value" id="qNew">0.00</span>
-                        </div>
-                    </div>
-                    <div class="formula-explanation">
-                        <div class="formula-param">
-                            <div class="formula-param-name">State (s)</div>
-                            <div class="formula-param-value" id="currentState">(0,0)</div>
-                            <div class="formula-param-desc">Current position</div>
-                        </div>
-                        <div class="formula-param">
-                            <div class="formula-param-name">Action (a)</div>
-                            <div class="formula-param-value" id="currentAction">-</div>
-                            <div class="formula-param-desc">Chosen action</div>
-                        </div>
-                        <div class="formula-param">
-                            <div class="formula-param-name">Reward (r)</div>
-                            <div class="formula-param-value" id="currentReward">0</div>
-                            <div class="formula-param-desc">Immediate reward</div>
-                        </div>
-                        <div class="formula-param">
-                            <div class="formula-param-name">Next State (s')</div>
-                            <div class="formula-param-value" id="nextState">(0,0)</div>
-                            <div class="formula-param-desc">New position</div>
-                        </div>
-                        <div class="formula-param">
-                            <div class="formula-param-name">Q_old</div>
-                            <div class="formula-param-value" id="qOldParam">0.00</div>
-                            <div class="formula-param-desc">Previous Q-value</div>
-                        </div>
-                        <div class="formula-param">
-                            <div class="formula-param-name">max Q(s',a')</div>
-                            <div class="formula-param-value" id="maxQParam">0.00</div>
-                            <div class="formula-param-desc">Best next Q-value</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Exploration vs Exploitation -->
-            <div class="section">
-                <h2>🔍 Exploration vs Exploitation</h2>
-                <div class="concept-box">
-                    <p><strong>Exploration:</strong> Trying new actions to discover potentially better strategies</p>
-                    <p><strong>Exploitation:</strong> Using known information to maximize reward</p>
-                </div>
-
-                <div class="warning-box">
-                    <p><strong>The Dilemma:</strong> Should the agent stick with what it knows works (exploit) or try something new that might be better (explore)? This is one of the fundamental challenges in reinforcement learning!</p>
-                </div>
-
-                <div class="info-box">
-                    <p><strong>ε-Greedy Strategy:</strong> With probability ε, choose a random action (explore). Otherwise, choose the best known action (exploit). Watch how the exploration rate affects learning in the grid world above!</p>
-                </div>
-            </div>
-
-            <!-- Key Takeaways -->
-            <div class="section">
-                <h2>🎓 Key Takeaways</h2>
-                <div class="concept-box">
-                    <p>✅ RL agents learn through trial and error</p>
-                    <p>✅ Actions have consequences (rewards/penalties)</p>
-                    <p>✅ The goal is to maximize cumulative reward over time</p>
-                    <p>✅ Q-Learning learns the value of state-action pairs</p>
-                    <p>✅ Balancing exploration and exploitation is crucial</p>
-                    <p>✅ Learning rate and discount factor affect how the agent learns</p>
-                </div>
-            </div>
         </div>
 
-        <div class="footer">
-            <p>🚀 Keep experimenting with different parameters to see how they affect learning!</p>
-            <p>Built with HTML, CSS, and JavaScript | Interactive RL Learning Platform</p>
+        <div class="right-panel">
+            <div class="card">
+                <div class="card-title">⚡ Q-Learning Formula (Live)</div>
+                <div class="formula-display">
+                    <div class="formula-main">
+                        <span class="var">Q</span><span class="op">(s,a)</span>
+                        <span class="op">←</span>
+                        <span class="val" id="qOld">0.00</span>
+                        <span class="op">+</span>
+                        <span class="val" id="alphaDisp">0.10</span>
+                        <span class="op"> × [</span>
+                        <span class="val" id="rewardDisp">0</span>
+                        <span class="op">+</span>
+                        <span class="val" id="gammaDisp">0.90</span>
+                        <span class="op"> ×</span>
+                        <span class="val" id="maxQDisp">0.00</span>
+                        <span class="op">-</span>
+                        <span class="val" id="qOldDisp2">0.00</span>
+                        <span class="op">]</span>
+                    </div>
+                    <div class="formula-result">
+                        <span class="op">⟹</span>
+                        <span class="var"> Q</span><span class="op">(s,a)</span>
+                        <span class="op"> = </span>
+                        <span class="val" id="qNew">0.00</span>
+                    </div>
+                </div>
+
+                <div class="params">
+                    <div class="param">
+                        <div class="param-name">State (s)</div>
+                        <div class="param-value" id="currentState">0,0</div>
+                    </div>
+                    <div class="param">
+                        <div class="param-name">Action (a)</div>
+                        <div class="param-value" id="currentAction">-</div>
+                    </div>
+                    <div class="param">
+                        <div class="param-name">Reward (r)</div>
+                        <div class="param-value" id="currentReward">0</div>
+                    </div>
+                    <div class="param">
+                        <div class="param-name">Next State</div>
+                        <div class="param-value" id="nextState">0,0</div>
+                    </div>
+                    <div class="param">
+                        <div class="param-name">Q_old</div>
+                        <div class="param-value" id="qOldParam">0.00</div>
+                    </div>
+                    <div class="param">
+                        <div class="param-name">max Q(s',a')</div>
+                        <div class="param-value" id="maxQParam">0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⚙️ Hyperparameters</div>
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span>Learning Rate (α)</span>
+                            <span class="slider-value" id="alphaValue">0.10</span>
+                        </div>
+                        <input type="range" id="alphaSlider" min="0" max="1" step="0.01" value="0.1" oninput="updateParameter('alpha', this.value)">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span>Discount (γ)</span>
+                            <span class="slider-value" id="gammaValue">0.90</span>
+                        </div>
+                        <input type="range" id="gammaSlider" min="0" max="1" step="0.01" value="0.9" oninput="updateParameter('gamma', this.value)">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span>Exploration (ε)</span>
+                            <span class="slider-value" id="epsilonValue">0.30</span>
+                        </div>
+                        <input type="range" id="epsilonSlider" min="0" max="1" step="0.01" value="0.3" oninput="updateParameter('epsilon', this.value)">
+                    </div>
+                    <div class="slider-item">
+                        <div class="slider-label">
+                            <span>Speed</span>
+                            <span class="slider-value" id="speedValue">50ms</span>
+                        </div>
+                        <input type="range" id="speedSlider" min="10" max="500" step="10" value="50" oninput="updateParameter('speed', this.value)">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Grid World Configuration
         const GRID_SIZE = 5;
         const ACTIONS = ['up', 'down', 'left', 'right'];
 
-        // Game State
         let agentPos = { x: 0, y: 0 };
         let goalPos = { x: 4, y: 4 };
         let obstacles = [{ x: 2, y: 2 }, { x: 1, y: 3 }, { x: 3, y: 1 }];
         let visited = new Set();
 
-        // Q-Learning Parameters
         let qTable = {};
-        let alpha = 0.1;  // Learning rate
-        let gamma = 0.9;  // Discount factor
-        let epsilon = 0.3; // Exploration rate
+        let alpha = 0.1;
+        let gamma = 0.9;
+        let epsilon = 0.3;
         let trainingSpeed = 50;
 
-        // Statistics
         let episodes = 0;
         let totalReward = 0;
         let steps = 0;
@@ -741,7 +519,6 @@
         let isTraining = false;
         let trainingInterval = null;
 
-        // Initialize Q-Table
         function initQTable() {
             qTable = {};
             for (let y = 0; y < GRID_SIZE; y++) {
@@ -752,7 +529,6 @@
             }
         }
 
-        // Create Grid World
         function createGrid() {
             const gridDiv = document.getElementById('gridWorld');
             gridDiv.innerHTML = '';
@@ -776,7 +552,7 @@
                         cell.textContent = '🎯';
                     } else if (obstacles.some(obs => obs.x === x && obs.y === y)) {
                         cell.classList.add('obstacle');
-                        cell.textContent = '🚫';
+                        cell.textContent = '⬛';
                     } else if (visited.has(`${x},${y}`)) {
                         cell.classList.add('visited');
                     }
@@ -790,7 +566,6 @@
             gridDiv.appendChild(gridContainer);
         }
 
-        // Update Grid Cell
         function updateCell(x, y) {
             const cell = document.getElementById(`cell-${x}-${y}`);
             if (!cell) return;
@@ -802,19 +577,18 @@
                 cell.classList.add('agent');
                 cell.textContent = '🤖';
                 cell.classList.add('pulse');
-                setTimeout(() => cell.classList.remove('pulse'), 500);
+                setTimeout(() => cell.classList.remove('pulse'), 300);
             } else if (x === goalPos.x && y === goalPos.y) {
                 cell.classList.add('goal');
                 cell.textContent = '🎯';
             } else if (obstacles.some(obs => obs.x === x && obs.y === y)) {
                 cell.classList.add('obstacle');
-                cell.textContent = '🚫';
+                cell.textContent = '⬛';
             } else if (visited.has(`${x},${y}`)) {
                 cell.classList.add('visited');
             }
         }
 
-        // Get next position based on action
         function getNextPos(pos, action) {
             const newPos = { ...pos };
             switch (action) {
@@ -826,14 +600,12 @@
             return newPos;
         }
 
-        // Get reward for a position
         function getReward(pos) {
             if (pos.x === goalPos.x && pos.y === goalPos.y) return 100;
             if (obstacles.some(obs => obs.x === pos.x && obs.y === pos.y)) return -100;
             return -1;
         }
 
-        // Move agent
         function moveAgent(action) {
             if (isTraining) return;
 
@@ -852,26 +624,15 @@
 
             updateStats();
 
-            if (reward === 100) {
-                setTimeout(() => {
-                    alert('🎉 Goal reached! Total reward: ' + totalReward);
-                    resetGrid();
-                }, 100);
-            } else if (reward === -100) {
-                setTimeout(() => {
-                    alert('💥 Hit obstacle! Total reward: ' + totalReward);
-                    resetGrid();
-                }, 100);
+            if (reward === 100 || reward === -100) {
+                setTimeout(resetGrid, 500);
             }
         }
 
-        // Choose action using ε-greedy strategy
         function chooseAction(state) {
             if (Math.random() < epsilon) {
-                // Explore: random action
                 return ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
             } else {
-                // Exploit: best action
                 const qValues = qTable[state];
                 let bestAction = ACTIONS[0];
                 let bestValue = qValues[bestAction];
@@ -887,46 +648,36 @@
             }
         }
 
-        // Q-Learning update
         function qLearningUpdate(state, action, reward, nextState) {
             const currentQ = qTable[state][action];
             const maxNextQ = Math.max(...Object.values(qTable[nextState]));
             const newQ = currentQ + alpha * (reward + gamma * maxNextQ - currentQ);
             qTable[state][action] = newQ;
 
-            // Update live formula display
             updateFormulaDisplay(state, action, reward, nextState, currentQ, maxNextQ, newQ);
         }
 
-        // Update the real-time formula display
         function updateFormulaDisplay(state, action, reward, nextState, currentQ, maxNextQ, newQ) {
-            // Update formula values
             document.getElementById('qOld').textContent = currentQ.toFixed(2);
-            document.getElementById('qOldDisplay').textContent = currentQ.toFixed(2);
-            document.getElementById('alphaDisplay').textContent = alpha.toFixed(2);
-            document.getElementById('rewardDisplay').textContent = reward.toFixed(0);
-            document.getElementById('gammaDisplay').textContent = gamma.toFixed(2);
-            document.getElementById('maxQDisplay').textContent = maxNextQ.toFixed(2);
+            document.getElementById('qOldDisp2').textContent = currentQ.toFixed(2);
+            document.getElementById('alphaDisp').textContent = alpha.toFixed(2);
+            document.getElementById('rewardDisp').textContent = reward.toFixed(0);
+            document.getElementById('gammaDisp').textContent = gamma.toFixed(2);
+            document.getElementById('maxQDisp').textContent = maxNextQ.toFixed(2);
             document.getElementById('qNew').textContent = newQ.toFixed(2);
 
-            // Update parameter cards
-            document.getElementById('currentState').textContent = `(${state})`;
-            document.getElementById('currentAction').textContent = action;
+            document.getElementById('currentState').textContent = state;
+            document.getElementById('currentAction').textContent = action.charAt(0).toUpperCase() + action.slice(1);
             document.getElementById('currentReward').textContent = reward.toFixed(0);
-            document.getElementById('nextState').textContent = `(${nextState})`;
+            document.getElementById('nextState').textContent = nextState;
             document.getElementById('qOldParam').textContent = currentQ.toFixed(2);
             document.getElementById('maxQParam').textContent = maxNextQ.toFixed(2);
 
-            // Add pulsing animation to highlight update
-            const formulaDisplay = document.getElementById('liveFormula');
-            formulaDisplay.style.transform = 'scale(1.02)';
-            formulaDisplay.style.transition = 'transform 0.2s ease';
-            setTimeout(() => {
-                formulaDisplay.style.transform = 'scale(1)';
-            }, 200);
+            const formulaDiv = document.querySelector('.formula-display');
+            formulaDiv.classList.add('pulse');
+            setTimeout(() => formulaDiv.classList.remove('pulse'), 300);
         }
 
-        // Training step
         function trainingStep() {
             const oldPos = { ...agentPos };
             const state = `${oldPos.x},${oldPos.y}`;
@@ -948,12 +699,10 @@
             totalReward += reward;
             steps++;
 
-            // Check if episode ended
             if (reward === 100 || reward === -100) {
                 episodes++;
                 if (reward === 100) successCount++;
 
-                // Reset for next episode
                 visited.clear();
                 const oldAgentPos = { ...agentPos };
                 agentPos = { x: 0, y: 0 };
@@ -964,30 +713,24 @@
             updateStats();
         }
 
-        // Toggle training
         function toggleTraining() {
             isTraining = !isTraining;
             const btn = document.getElementById('trainBtn');
 
             if (isTraining) {
-                btn.textContent = '⏸️ Stop Training';
-                btn.style.background = '#e74c3c';
+                btn.textContent = '⏸️ Stop';
+                btn.classList.add('danger');
                 trainingInterval = setInterval(trainingStep, trainingSpeed);
             } else {
-                btn.textContent = '🎓 Start Training';
-                btn.style.background = '#667eea';
+                btn.textContent = '▶️ Train';
+                btn.classList.remove('danger');
                 clearInterval(trainingInterval);
             }
         }
 
-        // Show optimal policy
         function showOptimalPolicy() {
-            if (isTraining) {
-                alert('Stop training first!');
-                return;
-            }
+            if (isTraining) return;
 
-            // Reset and follow best policy
             resetGrid();
 
             const moveSequence = [];
@@ -1016,7 +759,6 @@
                 }
             }
 
-            // Execute moves
             let i = 0;
             const interval = setInterval(() => {
                 if (i >= moveSequence.length) {
@@ -1027,13 +769,13 @@
             }, 300);
         }
 
-        // Reset grid
         function resetGrid() {
             if (trainingInterval) {
                 clearInterval(trainingInterval);
                 isTraining = false;
-                document.getElementById('trainBtn').textContent = '🎓 Start Training';
-                document.getElementById('trainBtn').style.background = '#667eea';
+                const btn = document.getElementById('trainBtn');
+                btn.textContent = '▶️ Train';
+                btn.classList.remove('danger');
             }
 
             agentPos = { x: 0, y: 0 };
@@ -1045,7 +787,6 @@
             updateStats();
         }
 
-        // Update parameter
         function updateParameter(param, value) {
             value = parseFloat(value);
 
@@ -1053,12 +794,12 @@
                 case 'alpha':
                     alpha = value;
                     document.getElementById('alphaValue').textContent = value.toFixed(2);
-                    document.getElementById('alphaDisplay').textContent = value.toFixed(2);
+                    document.getElementById('alphaDisp').textContent = value.toFixed(2);
                     break;
                 case 'gamma':
                     gamma = value;
                     document.getElementById('gammaValue').textContent = value.toFixed(2);
-                    document.getElementById('gammaDisplay').textContent = value.toFixed(2);
+                    document.getElementById('gammaDisp').textContent = value.toFixed(2);
                     break;
                 case 'epsilon':
                     epsilon = value;
@@ -1075,7 +816,6 @@
             }
         }
 
-        // Update statistics display
         function updateStats() {
             document.getElementById('episodeCount').textContent = episodes;
             document.getElementById('totalReward').textContent = totalReward;
@@ -1084,7 +824,6 @@
             document.getElementById('successRate').textContent = successRate + '%';
         }
 
-        // Initialize
         initQTable();
         createGrid();
         updateStats();
